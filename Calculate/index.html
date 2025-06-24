@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>คำนวณการผลิตเกลือ</title>
+  <link href="style.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    label i, button i {
+      margin-right: 8px;
+      color: #0288d1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-water"></i> แอปคำนวณการผลิตเกลือ</h1>
+
+    <label for="area"><i class="fas fa-vector-square"></i> พื้นที่นาเกลือ (ไร่)</label>
+    <input id="area" type="number" min="0.1" step="0.1" value="1" />
+
+    <label for="startDate"><i class="fas fa-calendar-alt"></i> วันที่เริ่มต้นการผลิต</label>
+    <input id="startDate" type="date" />
+
+    <label for="weather"><i class="fas fa-sun"></i> สภาพอากาศโดยเฉลี่ย</label>
+    <select id="weather">
+      <option value="ร้อนจัด">ร้อนจัด (แดดจัด ไม่มีเมฆ)</option>
+      <option value="ปกติ" selected>ปกติ (แดดดี มีเมฆน้อย)</option>
+      <option value="มีเมฆบางส่วน">มีเมฆบางส่วน</option>
+      <option value="มีเมฆมาก">มีเมฆมาก (แดดน้อย)</option>
+    </select>
+
+    <label for="wind"><i class="fas fa-wind"></i> ความเร็วลมเฉลี่ย (km/h)</label>
+    <input id="wind" type="number" min="0" step="1" value="10" />
+
+    <label for="temp"><i class="fas fa-temperature-high"></i> อุณหภูมิเฉลี่ยตอนกลางวัน (°C)</label>
+    <input id="temp" type="number" min="0" step="1" value="35" />
+
+    <button onclick="calculate()"><i class="fas fa-calculator"></i> คำนวณ</button>
+
+    <div id="result" class="result"></div>
+
+    <div class="note">
+      <strong>หมายเหตุ:</strong>
+      <ul>
+        <li>ความแม่นยำของผลการคำนวณขึ้นอยู่กับ ความถูกต้องของข้อมูลที่ผู้ใช้กรอก</li>
+        <li>ระยะเวลาในการผลิตเกลือขึ้นอยู่กับสภาพอากาศ, ลม, และอุณหภูมิ</li>
+        <li>ข้อมูลนี้เป็นการประเมินเบื้องต้นเพื่อช่วยวางแผน</li>
+        <li>ฤดูกาลที่เหมาะสมในการทำนาเกลือคือ พฤศจิกายน - เมษายน</li>
+      </ul>
+      <strong>Contact:</strong>
+      <ul>
+        <li> Gmail: Top.tt2151@gmail.com</a></li>
+        <li> Facebook: รัชวัฒน์ หนูศาสตร์  </a></li>
+        
+      </ul>
+  </div>
+
+  <script>
+    function formatDate(date) {
+      return new Date(date).toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    function showResult(html) {
+      document.getElementById('result').innerHTML = html;
+    }
+
+    function calculate() {
+      const area = parseFloat(document.getElementById('area').value) || 0;
+      const startDateValue = document.getElementById('startDate').value;
+      const weather = document.getElementById('weather').value;
+      const wind = parseFloat(document.getElementById('wind').value) || 0;
+      const temp = parseFloat(document.getElementById('temp').value) || 0;
+
+      if (!startDateValue) {
+        return showResult('<p style="color:red"><i class="fas fa-exclamation-triangle"></i> กรุณาระบุวันที่เริ่มต้น</p>');
+      }
+      if (area <= 0) {
+        return showResult('<p style="color:red"><i class="fas fa-exclamation-triangle"></i> กรุณาระบุพื้นที่ให้ถูกต้อง</p>');
+      }
+
+      let baseDays = 20;
+      let yieldPerRai = 1500;
+
+      switch (weather) {
+        case 'ร้อนจัด': baseDays = 15; yieldPerRai = 2000; break;
+        case 'ปกติ': baseDays = 20; yieldPerRai = 1500; break;
+        case 'มีเมฆบางส่วน': baseDays = 25; yieldPerRai = 1200; break;
+        case 'มีเมฆมาก': baseDays = 30; yieldPerRai = 1000; break;
+      }
+
+      const windFactor = (wind - 10) * 0.2;
+      const tempFactor = (temp - 35) * 0.3;
+
+      let harvestDays = baseDays - windFactor - tempFactor;
+      harvestDays = Math.max(10, Math.min(35, Math.round(harvestDays)));
+
+      const start = new Date(startDateValue);
+      const harvestDate = new Date(start);
+      harvestDate.setDate(start.getDate() + harvestDays);
+
+      const totalYield = yieldPerRai * area;
+
+      showResult(`
+        <h2><i class="fas fa-chart-line"></i> ผลการคำนวณ</h2>
+        <p><strong><i class="fas fa-play-circle"></i> วันที่เริ่มต้น:</strong> ${formatDate(start)}</p>
+        <p><strong><i class="fas fa-hourglass-half"></i> ระยะเวลาในการผลิต:</strong> ${harvestDays} วัน</p>
+        <p><strong><i class="fas fa-calendar-check"></i> วันที่คาดว่าจะเก็บเกี่ยวได้:</strong> ${formatDate(harvestDate)}</p>
+        <p><strong><i class="fas fa-balance-scale"></i> ผลผลิตโดยประมาณ:</strong> ${yieldPerRai.toLocaleString()} กก./ไร่</p>
+        <p><strong><i class="fas fa-weight"></i> ผลผลิตรวมโดยประมาณ:</strong> ${totalYield.toLocaleString()} กก. (${(totalYield / 1000).toFixed(2)} ตัน)</p>
+        <hr>
+        <p><i class="fas fa-wind"></i> ลม: ${wind} km/h | <i class="fas fa-thermometer-half"></i> อุณหภูมิ: ${temp}°C</p>
+      `);
+    }
+  </script>
+</body>
+</html>
+
+
