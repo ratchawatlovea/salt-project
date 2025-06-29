@@ -116,7 +116,6 @@
             justify-content: center;
             align-items: center;
             gap: 8rem;
-            /*background-color: black;*/
         }
 
         .home .home-content h1{
@@ -202,13 +201,61 @@
             border: 2px solid #1f85ad;
             transition: 0.3s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn:hover{
-            transform: scale3d(1.03);
+            transform: scale(1.03);
             background-color: #2476ba;
             color: black;
             box-shadow: 0 0 25px #1979be;
+        }
+
+        /* Click Animation for Calculate Button */
+        .btn.clicked {
+            animation: clickPop 0.4s ease;
+        }
+
+        @keyframes clickPop {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 0 25px #1979be;
+            }
+            25% { 
+                transform: scale(0.95);
+                background-color: #0066cc;
+                box-shadow: 0 0 35px #1979be, inset 0 0 20px rgba(255,255,255,0.3);
+            }
+            50% { 
+                transform: scale(1.1);
+                background-color: #00aaff;
+                box-shadow: 0 0 45px #1979be, 0 0 60px rgba(0,170,255,0.5);
+            }
+            100% { 
+                transform: scale(1);
+                background-color: white;
+                box-shadow: 0 0 25px #1979be;
+            }
+        }
+
+        /* Ripple effect */
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn.clicked::before {
+            width: 300px;
+            height: 300px;
         }
 
         .typing-text{
@@ -229,13 +276,18 @@
 
         .typing-text span::after{
             content: "";
-            /*background-color: black;*/
             position: absolute;
             width: calc(100% + 8px);
             height: 100%;
             border-left: 3px solid black;
             right: -8;
             animation: cursor 0.6s infinite;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1);}
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         @keyframes cursor{
@@ -313,22 +365,20 @@
             <p>การคำนวณหาค่าเกลือ</p>
             
             <div class="social-icons">
-    <a href="https://www.instagram.com/r_tchavvat/" title="Instagram 1">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram 1">
-    </a>
-    <a href="https://www.facebook.com/rach.wat.hn.hnu.sastr" title="Facebook">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
-    </a>
-    <a href="https://line.me/ti/p/21514161" title="Line">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" alt="Line">
-    </a>
-</div>
+                <a href="https://www.instagram.com/r_tchavvat/" title="Instagram 1">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram 1">
+                </a>
+                <a href="https://www.facebook.com/rach.wat.hn.hnu.sastr" title="Facebook">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook">
+                </a>
+                <a href="https://line.me/ti/p/21514161" title="Line">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg" alt="Line">
+                </a>
+            </div>
 
-            
-            <a href="Calculate/" class="btn">Calculate</a>
-        </div>
-
-        
+            <a href="Calculate/index.html" class="btn" id="calculateBtn">Calculate</a>
+        </div> 
+    </section>
 
     <script>
         // Mobile menu toggle
@@ -377,6 +427,25 @@
                     link.classList.add('active');
                 }
             });
+        });
+
+        // Calculate button click animation
+        const calculateBtn = document.getElementById('calculateBtn');
+        
+        calculateBtn.addEventListener('click', (e) => {
+            // Add clicked class for animation
+            calculateBtn.classList.add('clicked');
+            
+            // Remove the class after animation completes
+            setTimeout(() => {
+                calculateBtn.classList.remove('clicked');
+            }, 400);
+            
+            // Optional: Add a small delay before navigation for better UX
+            e.preventDefault();
+            setTimeout(() => {
+                window.location.href = calculateBtn.getAttribute('href');
+            }, 200);
         });
     </script>
 </body>
