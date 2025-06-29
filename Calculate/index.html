@@ -4,12 +4,414 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>คำนวณการผลิตเกลือ</title>
-  <link href="style.css" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    label i, button i {
-      margin-right: 8px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      animation: backgroundShift 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes backgroundShift {
+      0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      100% { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 25px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      animation: containerFloat 6s ease-in-out infinite;
+    }
+
+    @keyframes containerFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 35px;
+      font-size: 2.2em;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+      0% { text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+      100% { text-shadow: 2px 2px 20px rgba(102, 126, 234, 0.3); }
+    }
+
+    h1 i {
+      color: #3498db;
+      margin-right: 15px;
+      animation: waterDrop 2s ease-in-out infinite;
+    }
+
+    @keyframes waterDrop {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-5px) scale(1.1); }
+    }
+
+    label {
+      display: block;
+      margin: 25px 0 10px 0;
+      color: #2c3e50;
+      font-weight: 600;
+      font-size: 1.1em;
+      transition: all 0.3s ease;
+    }
+
+    label:hover {
+      color: #3498db;
+      transform: translateX(5px);
+    }
+
+    label i {
+      margin-right: 10px;
       color: #0288d1;
+      width: 20px;
+      animation: iconBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes iconBounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    input, select {
+      width: 100%;
+      padding: 15px 20px;
+      border: 2px solid #e0e6ed;
+      border-radius: 15px;
+      font-size: 1em;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+      box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #3498db;
+      background: white;
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2),
+                  inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+
+    input:hover, select:hover {
+      border-color: #74b9ff;
+      transform: translateY(-1px);
+    }
+
+    button {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      font-size: 1.3em;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 30px 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    button:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    button:hover:before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    }
+
+    button:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+
+    button i {
+      margin-right: 10px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover i {
+      animation: buttonIconSpin 0.6s ease-in-out;
+    }
+
+    @keyframes buttonIconSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Animation สำหรับปุ่มตอน click */
+    button.calculating {
+      background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+      cursor: not-allowed;
+      animation: calculatePulse 1.5s infinite;
+    }
+
+    @keyframes calculatePulse {
+      0% { 
+        transform: scale(1);
+        box-shadow: 0 8px 25px rgba(253, 203, 110, 0.3);
+      }
+      50% { 
+        transform: scale(1.05);
+        box-shadow: 0 15px 35px rgba(253, 203, 110, 0.5);
+      }
+      100% { 
+        transform: scale(1);
+        box-shadow: 0 8px 25px rgba(253, 203, 110, 0.3);
+      }
+    }
+
+    /* Ripple effect */
+    button.ripple:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      transform: translate(-50%, -50%);
+      animation: rippleEffect 0.8s ease-out;
+    }
+
+    @keyframes rippleEffect {
+      to {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+      }
+    }
+
+    /* Loading spinner */
+    .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ffffff;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 25px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 20px;
+      opacity: 0;
+      transform: translateY(30px) scale(0.9);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+    }
+
+    .result.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      animation: resultSlideIn 0.8s ease-out;
+    }
+
+    @keyframes resultSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateY(50px) rotateX(-10deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg);
+      }
+    }
+
+    .result h2 {
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.5em;
+      animation: resultTitleGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes resultTitleGlow {
+      0% { text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+      100% { text-shadow: 0 0 20px rgba(255,255,255,0.8); }
+    }
+
+    .result p {
+      margin: 12px 0;
+      font-size: 1.1em;
+      opacity: 0;
+      animation: resultItemSlide 0.6s ease-out forwards;
+    }
+
+    .result p:nth-child(2) { animation-delay: 0.1s; }
+    .result p:nth-child(3) { animation-delay: 0.2s; }
+    .result p:nth-child(4) { animation-delay: 0.3s; }
+    .result p:nth-child(5) { animation-delay: 0.4s; }
+    .result p:nth-child(6) { animation-delay: 0.5s; }
+    .result p:nth-child(8) { animation-delay: 0.6s; }
+
+    @keyframes resultItemSlide {
+      0% {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .result hr {
+      margin: 20px 0;
+      border: none;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+      animation: hrGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes hrGlow {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .note {
+      margin-top: 35px;
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      border-left: 5px solid #3498db;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      animation: noteFloat 8s ease-in-out infinite;
+    }
+
+    @keyframes noteFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .note strong {
+      color: #2c3e50;
+      display: block;
+      margin-bottom: 12px;
+      font-size: 1.2em;
+    }
+
+    .note ul {
+      margin-left: 25px;
+      color: #5a6c7d;
+    }
+
+    .note li {
+      margin: 10px 0;
+      line-height: 1.6;
+      transition: all 0.3s ease;
+    }
+
+    .note li:hover {
+      color: #2c3e50;
+      transform: translateX(5px);
+    }
+
+    .error {
+      background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      animation: errorShake 0.6s ease-in-out;
+      box-shadow: 0 10px 25px rgba(214, 48, 49, 0.3);
+    }
+
+    @keyframes errorShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        padding: 25px;
+      }
+      
+      h1 {
+        font-size: 1.8em;
+      }
+
+      button {
+        font-size: 1.1em;
+        padding: 15px;
+      }
+    }
+
+    /* Particle animation background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+      animation: particleMove 20s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    @keyframes particleMove {
+      0%, 100% { 
+        background-position: 0% 0%, 100% 100%, 50% 50%;
+      }
+      33% { 
+        background-position: 30% 70%, 70% 30%, 80% 20%;
+      }
+      66% { 
+        background-position: 70% 30%, 30% 70%, 20% 80%;
+      }
     }
   </style>
 </head>
@@ -37,7 +439,11 @@
     <label for="temp"><i class="fas fa-temperature-high"></i> อุณหภูมิเฉลี่ยตอนกลางวัน (°C)</label>
     <input id="temp" type="number" min="0" step="1" value="35" />
 
-    <button onclick="calculate()"><i class="fas fa-calculator"></i> คำนวณ</button>
+    <button onclick="calculate()" id="calculateBtn">
+      <div class="spinner" id="spinner"></div>
+      <i class="fas fa-calculator" id="calcIcon"></i> 
+      <span id="btnText">คำนวณ</span>
+    </button>
 
     <div id="result" class="result"></div>
 
@@ -51,10 +457,10 @@
       </ul>
       <strong>Contact:</strong>
       <ul>
-        <li> Gmail: Top.tt2151@gmail.com</a></li>
-        <li> Facebook: รัชวัฒน์ หนูศาสตร์  </a></li>
-        
+        <li>Gmail: Top.tt2151@gmail.com</li>
+        <li>Facebook: รัชวัฒน์ หนูศาสตร์</li>
       </ul>
+    </div>
   </div>
 
   <script>
@@ -66,11 +472,59 @@
       });
     }
 
-    function showResult(html) {
-      document.getElementById('result').innerHTML = html;
+    function showResult(html, isError = false) {
+      const resultDiv = document.getElementById('result');
+      
+      if (isError) {
+        resultDiv.innerHTML = `<div class="error">${html}</div>`;
+      } else {
+        resultDiv.innerHTML = html;
+      }
+      
+      // เพิ่ม class show พร้อม animation
+      resultDiv.classList.remove('show');
+      setTimeout(() => {
+        resultDiv.classList.add('show');
+      }, 100);
+    }
+
+    function addRippleEffect(button) {
+      button.classList.add('ripple');
+      setTimeout(() => {
+        button.classList.remove('ripple');
+      }, 800);
     }
 
     function calculate() {
+      const button = document.getElementById('calculateBtn');
+      const spinner = document.getElementById('spinner');
+      const calcIcon = document.getElementById('calcIcon');
+      const btnText = document.getElementById('btnText');
+      
+      // เพิ่ม ripple effect
+      addRippleEffect(button);
+      
+      // เปลี่ยนสถานะปุ่มเป็น loading
+      button.classList.add('calculating');
+      button.disabled = true;
+      spinner.style.display = 'inline-block';
+      calcIcon.style.display = 'none';
+      btnText.textContent = 'กำลังคำนวณ...';
+      
+      // จำลองการโหลด
+      setTimeout(() => {
+        performCalculation();
+        
+        // รีเซ็ตปุ่มกลับสู่สถานะปกติ
+        button.classList.remove('calculating');
+        button.disabled = false;
+        spinner.style.display = 'none';
+        calcIcon.style.display = 'inline';
+        btnText.textContent = 'คำนวณ';
+      }, 2000);
+    }
+
+    function performCalculation() {
       const area = parseFloat(document.getElementById('area').value) || 0;
       const startDateValue = document.getElementById('startDate').value;
       const weather = document.getElementById('weather').value;
@@ -78,10 +532,10 @@
       const temp = parseFloat(document.getElementById('temp').value) || 0;
 
       if (!startDateValue) {
-        return showResult('<p style="color:red"><i class="fas fa-exclamation-triangle"></i> กรุณาระบุวันที่เริ่มต้น</p>');
+        return showResult('<p><i class="fas fa-exclamation-triangle"></i> กรุณาระบุวันที่เริ่มต้น</p>', true);
       }
       if (area <= 0) {
-        return showResult('<p style="color:red"><i class="fas fa-exclamation-triangle"></i> กรุณาระบุพื้นที่ให้ถูกต้อง</p>');
+        return showResult('<p><i class="fas fa-exclamation-triangle"></i> กรุณาระบุพื้นที่ให้ถูกต้อง</p>', true);
       }
 
       let baseDays = 20;
@@ -117,8 +571,11 @@
         <p><i class="fas fa-wind"></i> ลม: ${wind} km/h | <i class="fas fa-thermometer-half"></i> อุณหภูมิ: ${temp}°C</p>
       `);
     }
+
+    // เซ็ตวันที่ปัจจุบัน
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+    });
   </script>
 </body>
 </html>
-
-
